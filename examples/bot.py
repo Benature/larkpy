@@ -1,16 +1,3 @@
-# pylark
-飞书开放平台 Python 接口 | Python SDK for Lark
-
-## 安装 Install
-
-```shell
-pip install pylark
-```
-
-## 快速开始 Quick Start
-
-```python
-
 from pylark import FeishuBot
 
 url_webhook = "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxx"
@@ -25,4 +12,3 @@ payload = [
     dict(tag="a", text="🔗 link", href="https://www.github.com")
 ]
 feishu.send_with_payload(payload, title="标题")
-```
