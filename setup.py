@@ -34,15 +34,14 @@ def get_version() -> str:
 
 
 setuptools.setup(
-    name="wucai",
+    name="larkpy",
     version=get_version(),
     author="Benature Wang",
     author_email="benature246@gmail.com",
-    description=
-    "五彩 Python API | python API for wucai ( https://www.wucainote.com , https://marker.dotalk.cn )",
+    description="飞书开放平台 Python 接口 | Python SDK for Lark",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Benature/wucai",
+    url="https://github.com/Benature/larkpy",
     packages=setuptools.find_packages(),
     install_requires=['requests', 'bs4', 'lxml'],
     # entry_points={
