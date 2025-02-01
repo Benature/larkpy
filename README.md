@@ -1,4 +1,4 @@
-# pylark
+# lark.py
 飞书开放平台 Python 接口 | Python SDK for Lark
 
 ## 安装 Install
@@ -11,7 +11,7 @@ pip install pylark
 
 ```python
 
-from pylark import FeishuBot
+from larkpy import FeishuBot
 
 url_webhook = "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxx"
 feishu = FeishuBot(url_webhook)

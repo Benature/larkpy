@@ -7,7 +7,7 @@ from typing import List
 FILE_DIR = Path(__file__).parent
 
 REQUIREMENTS_SPEC = 'requirements.txt'
-PACKAGE_ENTRY = 'pylark'
+PACKAGE_ENTRY = 'larkpy'
 VERSION_FLAG = '__version__'
 
 with open("README.md", "r") as fh:

@@ -1,4 +1,4 @@
-from pylark import FeishuBot
+from larkpy import FeishuBot
 
 url_webhook = "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxx"
 feishu = FeishuBot(url_webhook)
