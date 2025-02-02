@@ -18,7 +18,7 @@ class FeishuBitTable(FeishuAPI):
 
     def search(self) -> Dict:
         """获取多维表格数据"""
-        # https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search?appId=cli_a644c99a03fbd00d
+        # https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search
         url = f"{self.url_prefix}/search"
         payload = json.dumps({})
         response = requests.request("POST",
@@ -28,7 +28,7 @@ class FeishuBitTable(FeishuAPI):
         return response.json()
 
     def update(self, fields: Dict, record_id: str | int):
-        # https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update?appId=cli_a644c99a03fbd00d
+        # https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update
         url = f'{self.url_prefix}/{record_id}'
         if 'fields' not in fields:
             fields = {'fields': fields}

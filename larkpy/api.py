@@ -10,10 +10,20 @@ class FeishuAPI():
 
     def __init__(self, app_id, app_secret) -> None:
         tenant_access_token = self._get_access_token(app_id, app_secret)
+        self.access_token = tenant_access_token
         self.headers = {
             'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': f'Bearer {tenant_access_token}'
+            'Authorization': f'Bearer {self.access_token}'
         }
+
+    def request(self,
+                method: Literal['GET', 'POST', 'PUT', 'DELETE'],
+                url: str,
+                payload: Dict = None):
+        return requests.request(method,
+                                url,
+                                headers=self.headers,
+                                json=payload)
 
     def _get_access_token(self, app_id, app_secret):
         """获取访问凭证"""
