@@ -43,7 +43,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Benature/larkpy",
     packages=setuptools.find_packages(),
-    install_requires=['requests', 'bs4', 'lxml'],
+    install_requires=['requests', 'bs4', 'lxml', 'pandas'],
     # entry_points={
     #     'console_scripts': [
     #         'autolatex=autolatex:excel2table',

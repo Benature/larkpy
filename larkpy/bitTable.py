@@ -1,24 +1,60 @@
 from __future__ import annotations
 import requests
 import json
-
-from typing_extensions import Union, List, Dict, Literal
+import pandas as pd
+from typing import List, Dict
 
 from .api import FeishuAPI
 
 
 class FeishuBitTable(FeishuAPI):
+    """飞书多维表格"""
 
     def __init__(self, app_id, app_secret, wiki_token, table_id) -> None:
         super().__init__(app_id, app_secret)
-        self.obj_token = self.get_node(wiki_token)['obj_token']
+        self.app_token = self.get_node(wiki_token)['obj_token']
         self.table_id = table_id
+        self.url_prefix = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{self.app_token}/tables/{self.table_id}/records"
 
-    def parse_bitable_data(self, data, columns=None):
-        """解析bitable数据"""
-        import pandas as pd
+    def search(self) -> Dict:
+        """获取多维表格数据"""
+        # https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search?appId=cli_a644c99a03fbd00d
+        url = f"{self.url_prefix}/search"
+        payload = json.dumps({})
+        response = requests.request("POST",
+                                    url,
+                                    headers=self.headers,
+                                    data=payload)
+        return response.json()
 
-        table_data = self.get_bitable_data(self.obj_token, self.table_id)
+    def update(self, fields: Dict, record_id: str | int):
+        # https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update?appId=cli_a644c99a03fbd00d
+        url = f'{self.url_prefix}/{record_id}'
+        if 'fields' not in fields:
+            fields = {'fields': fields}
+        payload = json.dumps(fields)
+        response = requests.request("PUT",
+                                    url,
+                                    headers=self.headers,
+                                    data=payload)
+        return response.json()
+
+    def batch_update(self, records: List | Dict[str, List]):
+        url = f"{self.url_prefix}/batch_update"
+        if isinstance(records, list):
+            records = {'records': records}
+        payload = json.dumps(records)
+        response = requests.request("POST",
+                                    url,
+                                    headers=self.headers,
+                                    data=payload)
+        return response.json()
+
+    def table2df(self,
+                 table_data: Dict,
+                 columns: List[str] = None) -> pd.DataFrame:
+        """解析 bitable 数据"""
+
         items = table_data['data']['items']
         data = []
         for item in items:
@@ -35,6 +71,7 @@ class FeishuBitTable(FeishuAPI):
         df = pd.DataFrame(data)
         return df
 
-    def get_df(self, columns=None):
-        table_data = self.get_bitable_data(self.obj_token, self.table_id)
-        return self.parse_bitable_data(table_data, columns=columns)
+    def to_frame(self, columns=None):
+        """convert bitable to pandas dataframe"""
+        table_data = self.search()
+        return self.table2df(table_data, columns=columns)

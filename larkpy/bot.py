@@ -9,8 +9,8 @@
 from __future__ import annotations
 import requests
 import json
-
-from typing_extensions import List, Dict, Literal
+from typing import List, Dict
+from typing_extensions import Literal
 
 
 class FeishuBot:

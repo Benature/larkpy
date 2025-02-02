@@ -2,7 +2,8 @@ from __future__ import annotations
 import requests
 import json
 
-from typing_extensions import Union, List, Dict, Literal
+from typing import List, Dict
+from typing_extensions import Literal
 
 
 class FeishuAPI():
@@ -22,46 +23,16 @@ class FeishuAPI():
         response_data = response.json()
         return response_data["tenant_access_token"]
 
-    def get_node(self, token: str, obj_type='wiki'):
+    def get_node(self,
+                 token: str,
+                 obj_type: Literal['doc', 'docx', 'sheet', 'mindnote',
+                                   'bitable', 'file', 'slides',
+                                   'wiki'] = None):
         # https://open.feishu.cn/document/server-docs/docs/wiki-v2/space-node/get_node
-        url = f'https://open.feishu.cn/open-apis/wiki/v2/spaces/get_node?token={token}'  # &obj_type={obj_type}'
-        response = requests.get(url, headers=self.headers)
+        url = f'https://open.feishu.cn/open-apis/wiki/v2/spaces/get_node?token={token}'
+        if obj_type is not None:
+            url += f'&obj_type={obj_type}'
+        response = requests.request("GET", url, headers=self.headers)
         data = response.json()
         node = data['data']['node']
         return node  # ['obj_token']
-
-    def get_bitable_data(self, app_token, table_id):
-        """获取多维表格数据"""
-        # https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search?appId=cli_a644c99a03fbd00d
-        url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/search"
-        payload = json.dumps({})
-        response = requests.request("POST",
-                                    url,
-                                    headers=self.headers,
-                                    data=payload)
-        return response.json()
-
-    def update_bitable_record(self, fields: Dict, app_token, table_id,
-                              record_id):
-        # https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update?appId=cli_a644c99a03fbd00d
-        url = f'https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/{record_id}'
-        if 'fields' not in fields:
-            fields = {'fields': fields}
-        payload = json.dumps(fields)
-        response = requests.request("PUT",
-                                    url,
-                                    headers=self.headers,
-                                    data=payload)
-        return response.json()
-
-    def batch_update_bitable_records(self, records: Union[List, Dict],
-                                     app_token, table_id):
-        url = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_update"
-        if isinstance(records, list):
-            records = {'records': records}
-        payload = json.dumps(records)
-        response = requests.request("POST",
-                                    url,
-                                    headers=self.headers,
-                                    data=payload)
-        return response.json()
