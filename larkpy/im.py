@@ -71,7 +71,7 @@ class FeishuMessage(FeishuAPI):
                      image_type: Literal['message', 'avatar'] = 'message'):
         """上传图片
         https://open.feishu.cn/document/server-docs/im-v1/image/create"""
-        url = "https://open.feishu.cn/open-apis/im/v1/images"
+        url = f"{self.url_im}/images"
         form = {
             'image_type': image_type,
             'image': (open(image_path, 'rb'))
@@ -113,7 +113,7 @@ class FeishuMessage(FeishuAPI):
             '.pptx': 'ppt',
         }.get(file_path.suffix.lower(), 'stream')
 
-        url = "https://open.feishu.cn/open-apis/im/v1/files"
+        url = f"{self.url_im}/files"
         form = {
             'file_type': file_type,
             'file_name': file_name or file_path.name,
@@ -143,5 +143,5 @@ class FeishuMessage(FeishuAPI):
         """撤回消息
         https://open.feishu.cn/document/server-docs/im-v1/message/delete
         """
-        url = f'https://open.feishu.cn/open-apis/im/v1/messages/{message_id}'
+        url = f'{self.url_im}/messages/{message_id}'
         self.request("DELETE", url)
