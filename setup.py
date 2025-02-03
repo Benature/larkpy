@@ -44,7 +44,7 @@ setuptools.setup(
     url="https://github.com/Benature/larkpy",
     packages=setuptools.find_packages(),
     install_requires=[
-        'requests', 'bs4', 'lxml', 'pandas', 'requests_toolbelt', 'logging'
+        'requests', 'bs4', 'lxml', 'pandas', 'requests_toolbelt'
     ],
     # entry_points={
     #     'console_scripts': [

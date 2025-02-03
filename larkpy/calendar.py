@@ -25,28 +25,27 @@ class FeishuCalendar(FeishuAPI):
         print(resp)
         return resp
 
-    def create_event(self,
-                     start_time: datetime.datetime,
-                     end_time: datetime.datetime,
-                     summary: str = None,
-                     description: str = None,
-                     need_notification: bool = None,
-                     visibility: Literal['default', 'public',
-                                         'private'] = None,
-                     attendee_ability: Literal['none', 'can_see_others',
-                                               'can_invite_others',
-                                               'can_modify_event'] = None,
-                     free_busy_status: Literal['busy', 'free'] = None,
-                     location: Dict[Literal['name', 'address', 'latitude',
-                                            'longitude'], str | float] = None,
-                     color: int = None,
-                     reminders: List[Dict[Literal['minutes'], int]] = None,
-                     recurrence: str = None,
-                     attachments: List[Dict[Literal['file_token'],
-                                            str]] = None,
-                     timezone: str = None,
-                     user_id_type: Literal['user_id', 'union_id',
-                                           'open_id'] = 'user_id'):
+    def create_event(
+        self,
+        start_time: datetime.datetime,
+        end_time: datetime.datetime,
+        summary: str = None,
+        description: str = None,
+        need_notification: bool = None,
+        visibility: Literal['default', 'public', 'private'] = None,
+        attendee_ability: Literal['none', 'can_see_others',
+                                  'can_invite_others',
+                                  'can_modify_event'] = None,
+        free_busy_status: Literal['busy', 'free'] = None,
+        location: Dict[Literal['name', 'address', 'latitude', 'longitude'],
+                       str | float] = None,
+        color: int = None,
+        reminders: List[Dict[Literal['minutes'], int]] = None,
+        recurrence: str = None,
+        attachments: List[Dict[Literal['file_token'], str]] = None,
+        timezone: str = None,
+        user_id_type: Literal['user_id', 'union_id', 'open_id'] = 'user_id',
+    ):
         """新建日程
         https://open.feishu.cn/document/server-docs/calendar-v4/calendar-event/create?appId=cli_a7cd947b13f91013&lang=zh-CN
         """
