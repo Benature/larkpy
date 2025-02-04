@@ -4,11 +4,15 @@ import json
 
 from typing import List, Dict
 from typing_extensions import Literal
+from ._typing import UserId
 
 
 class LarkAPI():
 
-    def __init__(self, app_id, app_secret) -> None:
+    def __init__(self,
+                 app_id: str,
+                 app_secret: str,
+                 user_id_type: UserId = None) -> None:
         tenant_access_token = self._get_access_token(app_id, app_secret)
         self.access_token = tenant_access_token
         self.headers = {
@@ -16,22 +20,27 @@ class LarkAPI():
             'Authorization': f'Bearer {self.access_token}'
         }
 
+        self.user_id_type = user_id_type  # default is "open_id"
+
     def request(self,
                 method: Literal['GET', 'POST', 'PUT', 'DELETE'],
                 url: str,
-                payload: Dict = None):
+                payload: Dict = None,
+                params: Dict = None):
+        if payload is not None:
+            params_string = "&".join([
+                f"{k}={v.strip()}" for k, v in params.items() if v is not None
+            ])
+            if "?" in url:
+                url = url.rstrip(" &") + f"&{params_string}"
+            else:
+                url = url.rstrip("?") + f"?{params_string}"
+
+        request_payload = {k: v for k, v in payload.items() if v is not None}
         return requests.request(method,
                                 url,
                                 headers=self.headers,
-                                json=payload)
-
-    def _get_access_token(self, app_id, app_secret):
-        """获取访问凭证"""
-        url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/"
-        data = {"app_id": app_id, "app_secret": app_secret}
-        response = requests.post(url, json=data)
-        response_data = response.json()
-        return response_data["tenant_access_token"]
+                                json=request_payload)
 
     def get_node(self,
                  token: str,
@@ -46,3 +55,11 @@ class LarkAPI():
         data = response.json()
         node = data['data']['node']
         return node  # ['obj_token']
+
+    def _get_access_token(self, app_id, app_secret):
+        """获取访问凭证"""
+        url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal/"
+        data = {"app_id": app_id, "app_secret": app_secret}
+        response = requests.post(url, json=data)
+        response_data = response.json()
+        return response_data["tenant_access_token"]

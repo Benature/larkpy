@@ -2,34 +2,71 @@ from __future__ import annotations
 import requests
 import json
 import pandas as pd
-from typing import List, Dict
 
 from .api import LarkAPI
+from ._typing import UserId, BitTableOperator, List, Dict, Literal
 
 
 class LarkBitTable(LarkAPI):
     """飞书多维表格"""
 
-    def __init__(self, app_id, app_secret, wiki_token, table_id) -> None:
-        super().__init__(app_id, app_secret)
+    def __init__(self,
+                 app_id,
+                 app_secret,
+                 wiki_token,
+                 table_id,
+                 view_id: str = None,
+                 user_id_type: UserId = None) -> None:
+        super().__init__(app_id, app_secret, user_id_type)
         self.app_token = self.get_node(wiki_token)['obj_token']
         self.table_id = table_id
-        self.url_prefix = f"https://open.feishu.cn/open-apis/bitable/v1/apps/{self.app_token}/tables/{self.table_id}/records"
+        self.view_id = view_id
 
-    def search(self) -> Dict:
-        """获取多维表格数据"""
+    @property
+    def pre_url(self):
+        return f"https://open.feishu.cn/open-apis/bitable/v1/apps/{self.app_token}/tables/{self.table_id}/records"
+
+    def search(self,
+               view_id: str = None,
+               fields: List[str] = None,
+               order: List[Dict[str, str | bool]] = None,
+               filter: Dict[str, str
+                            | List[Dict[str, str | List[str, str]]]] = None,
+               automatic_fields: bool = None,
+               user_id_type: UserId = None,
+               page_token: str = None,
+               page_size: int = None,
+               out=Literal[dict, pd.DataFrame]) -> Dict:
+        """查询记录"""
         # https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search
-        url = f"{self.url_prefix}/search"
-        payload = json.dumps({})
-        response = requests.request("POST",
-                                    url,
-                                    headers=self.headers,
-                                    data=payload)
-        return response.json()
+        params = dict(user_id_type=user_id_type or self.user_id_type,
+                      page_token=page_token,
+                      page_size=page_size)
 
-    def update(self, fields: Dict, record_id: str | int):
+        payload = dict(view_id=view_id or self.view_id,
+                       field_names=fields,
+                       sort=order,
+                       filter=filter,
+                       automatic_fields=automatic_fields)
+        response = self.request("POST", f"{self.pre_url}/search", payload,
+                                params)
+        res = response.json()
+        if out == dict:
+            return res
+        elif out == pd.DataFrame:
+            return self.table2df(res)
+        return res
+
+    @classmethod
+    def _cond(_, field: str, operator: BitTableOperator, value: List[str]):
+        """生成条件（类方法、实例方法）"""
+        if not isinstance(value, list):
+            value = [value]
+        return dict(field_name=field, operator=operator, value=value)
+
+    def update(self, record_id: str | int, fields: Dict):
         # https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update
-        url = f'{self.url_prefix}/{record_id}'
+        url = f'{self.pre_url}/{record_id}'
         if 'fields' not in fields:
             fields = {'fields': fields}
         payload = json.dumps(fields)
@@ -40,7 +77,7 @@ class LarkBitTable(LarkAPI):
         return response.json()
 
     def batch_update(self, records: List | Dict[str, List]):
-        url = f"{self.url_prefix}/batch_update"
+        url = f"{self.pre_url}/batch_update"
         if isinstance(records, list):
             records = {'records': records}
         payload = json.dumps(records)
@@ -71,7 +108,7 @@ class LarkBitTable(LarkAPI):
         df = pd.DataFrame(data)
         return df
 
-    def to_frame(self, columns=None):
+    def to_frame(self, data=None, columns=None):
         """convert bitable to pandas dataframe"""
-        table_data = self.search()
+        table_data = data or self.search()
         return self.table2df(table_data, columns=columns)
