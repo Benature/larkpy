@@ -13,7 +13,7 @@ from typing import List, Dict
 from typing_extensions import Literal
 
 
-class FeishuBot:
+class LarkBot:
     """飞书机器人
     https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN?lang=zh-CN
     """

@@ -3,7 +3,7 @@ import requests
 import json
 from enum import Enum
 
-from .api import FeishuAPI
+from .api import LarkAPI
 
 
 class BlockType(Enum):
@@ -29,7 +29,7 @@ class BlockType(Enum):
     todo = 17  # 待办事项
 
 
-class FeishuDocx(FeishuAPI):
+class LarkDocx(LarkAPI):
     docx_url = "https://open.feishu.cn/open-apis/docx/v1/documents"
 
     def __init__(self, app_id, app_secret, document_id) -> None:

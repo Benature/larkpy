@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .api import FeishuAPI
+from .api import LarkAPI
 from typing_extensions import Literal
 from typing import List, Dict
 import json
@@ -8,7 +8,7 @@ import requests
 import datetime
 
 
-class FeishuCalendar(FeishuAPI):
+class LarkCalendar(LarkAPI):
 
     def __init__(self, app_id, app_secret, calendar_id: str = None) -> None:
         super().__init__(app_id, app_secret)

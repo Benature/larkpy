@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .api import FeishuAPI
+from .api import LarkAPI
 from typing_extensions import Literal
 from typing import List, Dict
 import json
@@ -9,7 +9,7 @@ from requests_toolbelt import MultipartEncoder
 from .log import create_logger
 
 
-class FeishuMessage(FeishuAPI):
+class LarkMessage(LarkAPI):
 
     def __init__(self,
                  app_id,

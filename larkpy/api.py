@@ -6,7 +6,7 @@ from typing import List, Dict
 from typing_extensions import Literal
 
 
-class FeishuAPI():
+class LarkAPI():
 
     def __init__(self, app_id, app_secret) -> None:
         tenant_access_token = self._get_access_token(app_id, app_secret)

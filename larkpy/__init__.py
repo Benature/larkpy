@@ -2,10 +2,10 @@ __version__ = "0.0.4"
 __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
 
-from .bot import FeishuBot
+from .bot import LarkBot
 
-from .api import FeishuAPI
-from .docx import FeishuDocx
-from .bitTable import FeishuBitTable
-from .im import FeishuMessage
-from .calendar import FeishuCalendar
+from .api import LarkAPI
+from .docx import LarkDocx
+from .bitTable import LarkBitTable
+from .im import LarkMessage
+from .calendar import LarkCalendar

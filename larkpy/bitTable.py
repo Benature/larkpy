@@ -4,10 +4,10 @@ import json
 import pandas as pd
 from typing import List, Dict
 
-from .api import FeishuAPI
+from .api import LarkAPI
 
 
-class FeishuBitTable(FeishuAPI):
+class LarkBitTable(LarkAPI):
     """飞书多维表格"""
 
     def __init__(self, app_id, app_secret, wiki_token, table_id) -> None:
