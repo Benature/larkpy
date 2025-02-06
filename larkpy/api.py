@@ -27,16 +27,21 @@ class LarkAPI():
                 url: str,
                 payload: Dict = None,
                 params: Dict = None):
-        if payload is not None:
+        if params is not None:
             params_string = "&".join([
-                f"{k}={v.strip()}" for k, v in params.items() if v is not None
+                f"{k}={str(v).strip()}" for k, v in (params or {}).items()
+                if v is not None
             ])
             if "?" in url:
                 url = url.rstrip(" &") + f"&{params_string}"
             else:
                 url = url.rstrip("?") + f"?{params_string}"
 
-        request_payload = {k: v for k, v in payload.items() if v is not None}
+        request_payload = {
+            k: v
+            for k, v in (payload or {}).items() if v is not None
+        }
+        print(url)
         return requests.request(method,
                                 url,
                                 headers=self.headers,
