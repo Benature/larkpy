@@ -1,6 +1,7 @@
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
+__homepage__ = __github__
 
 from .bot import LarkBot
 

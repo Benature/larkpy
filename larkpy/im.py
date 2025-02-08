@@ -7,6 +7,7 @@ from pathlib import Path
 import requests
 from requests_toolbelt import MultipartEncoder
 from .log import create_logger
+from ._typing import UserId
 
 
 class LarkMessage(LarkAPI):
@@ -14,15 +15,19 @@ class LarkMessage(LarkAPI):
     def __init__(self,
                  app_id,
                  app_secret,
-                 level: Literal['INFO', 'DEBUG'] = 'INFO'):
+                 receive_id: str = None,
+                 log_level: Literal['INFO', 'DEBUG', 'WARNING',
+                                    'ERROR'] = 'ERROR'):
         super().__init__(app_id, app_secret)
         self.url_im = "https://open.feishu.cn/open-apis/im/v1"
-        self.logger = create_logger(stack_depth=2)
+        self.logger = create_logger(stack_depth=2, level=log_level)
+        self.receive_id = receive_id
+        self.message_history = []
 
     def messages(
         self,
-        receive_id: str,
         content: str | Dict,
+        receive_id: str = None,
         msg_type: Literal['text', 'post', 'image', 'file', 'audio', 'media',
                           'sticker', 'interactive', 'share_chat', 'share_user',
                           'system'] = 'text',
@@ -33,6 +38,7 @@ class LarkMessage(LarkAPI):
         https://open.feishu.cn/document/server-docs/im-v1/message/create
         https://open.feishu.cn/document/server-docs/im-v1/message-content-description/create_json
         """
+        receive_id = receive_id or self.receive_id
         if receive_id_type is None:
             if receive_id.startswith('ou_'):
                 receive_id_type = 'open_id'
@@ -64,7 +70,8 @@ class LarkMessage(LarkAPI):
         )
         response = self.request("POST", url, payload)
         self.logger.info("messages response: " + response.text)
-        return response
+        self.message_history.append(response.json())
+        return response.json()
 
     def upload_image(self,
                      image_path: str | Path,
@@ -88,7 +95,8 @@ class LarkMessage(LarkAPI):
         print(res)
         return None
 
-    def send_image(self, receive_id: str, image_path: str | Path):
+    def send_image(self, image_path: str | Path, receive_id: str = None):
+        receive_id = receive_id or self.receive_id
         image_key = self.upload_image(image_path)
         if image_key is not None:
             return self.messages(receive_id,
@@ -132,16 +140,46 @@ class LarkMessage(LarkAPI):
         return None
 
     def send_file(self,
-                  receive_id: str,
                   file_path: str | Path,
+                  receive_id: str = None,
                   file_name: str = None):
+        receive_id = receive_id or self.receive_id
         file_key = self.upload_file(file_path, file_name)
         if file_key is not None:
             return self.messages(receive_id, content=file_key, msg_type='file')
+
+    def get_group_chat_list(
+            self,
+            sort_type: Literal['ByActiveTimeDesc',
+                               'ByCreateTimeAsc'] = 'ByCreateTimeAsc',
+            user_id_type: UserId = None,
+            page_token: str = None,
+            page_size: int = None):
+        """获取用户或机器人所在的群列表
+        https://open.feishu.cn/document/server-docs/group/chat/list
+        """
+        params = dict(user_id_type=user_id_type,
+                      sort_type=sort_type,
+                      page_token=page_token,
+                      page_size=page_size)
+        return self.request("GET", f"{self.url_im}/chats",
+                            params=params).json()
 
     def recall(self, message_id: str):
         """撤回消息
         https://open.feishu.cn/document/server-docs/im-v1/message/delete
         """
         url = f'{self.url_im}/messages/{message_id}'
-        self.request("DELETE", url)
+        return self.request("DELETE", url).json()
+
+    def recall_all(self):
+        """撤回所有可撤回的历史消息"""
+        for m in self.message_history:
+            if m['code'] != 0: continue
+            message_id = m['data']['message_id']
+            recall_response = self.recall(message_id)
+            if recall_response['code'] != 0:
+                msg = f"Failed to recall message {message_id} {m['data']['body']}. Reason: {recall_response['msg']}"
+            else:
+                msg = f"Successfully recall message {message_id} {m['data']['body']}"
+            print(msg)

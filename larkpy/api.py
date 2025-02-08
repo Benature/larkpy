@@ -28,6 +28,9 @@ class LarkAPI():
                 payload: Dict = None,
                 params: Dict = None):
         if params is not None:
+            for key in ["user_id_type"]:
+                if key in params:
+                    params[key] = params[key] or self.__dict__[key]
             params_string = "&".join([
                 f"{k}={str(v).strip()}" for k, v in (params or {}).items()
                 if v is not None
@@ -41,7 +44,6 @@ class LarkAPI():
             k: v
             for k, v in (payload or {}).items() if v is not None
         }
-        print(url)
         return requests.request(method,
                                 url,
                                 headers=self.headers,
