@@ -1,4 +1,4 @@
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
 __homepage__ = __github__

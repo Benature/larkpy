@@ -99,8 +99,8 @@ class LarkMessage(LarkAPI):
         receive_id = receive_id or self.receive_id
         image_key = self.upload_image(image_path)
         if image_key is not None:
-            return self.messages(receive_id,
-                                 content=image_key,
+            return self.messages(content=image_key,
+                                 receive_id=receive_id,
                                  msg_type='image')
 
     def upload_file(self, file_path: str | Path, file_name: str = None):
@@ -146,7 +146,9 @@ class LarkMessage(LarkAPI):
         receive_id = receive_id or self.receive_id
         file_key = self.upload_file(file_path, file_name)
         if file_key is not None:
-            return self.messages(receive_id, content=file_key, msg_type='file')
+            return self.messages(content=file_key,
+                                 receive_id=receive_id,
+                                 msg_type='file')
 
     def get_group_chat_list(
             self,
