@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import requests
 from requests_toolbelt import MultipartEncoder
+import io
+
 from .log import create_logger
 from ._typing import UserId
 
@@ -23,6 +25,45 @@ class LarkMessage(LarkAPI):
         self.logger = create_logger(stack_depth=2, level=log_level)
         self.receive_id = receive_id
         self.message_history = []
+
+    def send(self,
+             content: str | Path | Dict,
+             receive_id: str = None,
+             **kwargs):
+        """发送消息（通用）：文本、图片、文件"""
+        if isinstance(content, (str, Path)):
+            test_path = Path(content)
+            if test_path.exists():
+                if test_path.suffix.lower() in [
+                        '.png', '.jpg', '.jpeg', '.gif'
+                ]:
+                    return self.send_image(test_path,
+                                           receive_id=receive_id,
+                                           **kwargs)
+                else:
+                    return self.send_file(test_path,
+                                          receive_id=receive_id,
+                                          **kwargs)
+            else:
+                return self.messages(content, receive_id=receive_id, **kwargs)
+        else:
+            try:
+                from pandas.core.frame import DataFrame
+                if isinstance(content, DataFrame):
+                    return self.send_file(content,
+                                          receive_id=receive_id,
+                                          **kwargs)
+            except ModuleNotFoundError:
+                pass
+
+            try:
+                from matplotlib.figure import Figure
+                if isinstance(content, Figure):
+                    return self.send_image(content,
+                                           receive_id=receive_id,
+                                           **kwargs)
+            except ModuleNotFoundError:
+                pass
 
     def messages(
         self,
@@ -74,77 +115,113 @@ class LarkMessage(LarkAPI):
         return response.json()
 
     def upload_image(self,
-                     image_path: str | Path,
+                     image: str | Path,
                      image_type: Literal['message', 'avatar'] = 'message'):
         """上传图片
         https://open.feishu.cn/document/server-docs/im-v1/image/create"""
-        url = f"{self.url_im}/images"
-        form = {
-            'image_type': image_type,
-            'image': (open(image_path, 'rb'))
-        }  # 需要替换具体的path
+        if isinstance(image, (str, Path)):
+            image = Path(image)
+            buffer = open(image, 'rb')
+        else:
+            buffer = io.BytesIO()
+            from matplotlib.figure import Figure
+            if isinstance(image, Figure):
+                image.savefig(buffer, format='png')
+            if buffer.getbuffer().nbytes == 0:
+                raise ValueError(f"Unknown `file` type {type(file)}")
+            buffer.seek(0)
+            raise ValueError(f"Unknown `image_path` type {type(image)}")
+
+        form = {'image_type': image_type, 'image': (buffer)}  # 需要替换具体的path
         multi_form = MultipartEncoder(form)
         headers = {
             'Authorization': f'Bearer {self.access_token}',
             'Content-Type': multi_form.content_type
         }
-        response = requests.post(url, headers=headers, data=multi_form)
+        response = requests.post(f"{self.url_im}/images",
+                                 headers=headers,
+                                 data=multi_form)
         res = response.json()
         if res.get('code') == 0:
             return res['data']['image_key']
         print(res)
+        try:
+            image.close()
+        except:
+            pass
         return None
 
-    def send_image(self, image_path: str | Path, receive_id: str = None):
+    def send_image(self, image: str | Path, receive_id: str = None):
         receive_id = receive_id or self.receive_id
-        image_key = self.upload_image(image_path)
+        image_key = self.upload_image(image)
         if image_key is not None:
             return self.messages(content=image_key,
                                  receive_id=receive_id,
                                  msg_type='image')
 
-    def upload_file(self, file_path: str | Path, file_name: str = None):
+    def upload_file(self, file: str | Path, file_name: str = None):
         """上传文件
         https://open.feishu.cn/document/server-docs/im-v1/file/create
         """
-        file_path = Path(file_path)
+        if isinstance(file, (str, Path)):
+            file = Path(file)
+            buffer = open(file, 'rb')
+            file_type = {
+                '.opus': 'opus',
+                '.mp4': 'mp4',
+                '.pdf': 'pdf',
+                '.doc': 'doc',
+                '.docx': 'doc',
+                '.xls': 'xls',
+                '.xlsx': 'xls',
+                '.ppt': 'ppt',
+                '.pptx': 'ppt',
+            }.get(file.suffix.lower(), 'stream')
+            _file_name = file.name
+        else:
+            buffer = io.BytesIO()
+            import pandas as pd
+            if isinstance(file, pd.DataFrame):
+                file.to_excel(buffer, engine='openpyxl')
+            file_type = 'xls'
+            _file_name = 'dataframe.xlsx'
+            if file_name is not None:
+                file_name = Path(file_name).with_suffix('.xlsx').name
+            if buffer.getbuffer().nbytes == 0:
+                raise ValueError(f"Unknown `file` type {type(file)}")
+            buffer.seek(0)
 
-        file_type = {
-            '.opus': 'opus',
-            '.mp4': 'mp4',
-            '.pdf': 'pdf',
-            '.doc': 'doc',
-            '.docx': 'doc',
-            '.xls': 'xls',
-            '.xlsx': 'xls',
-            '.ppt': 'ppt',
-            '.pptx': 'ppt',
-        }.get(file_path.suffix.lower(), 'stream')
-
-        url = f"{self.url_im}/files"
         form = {
             'file_type': file_type,
-            'file_name': file_name or file_path.name,
-            'file': (file_path.name, open(file_path, 'rb'), 'text/plain')
-        }  # 需要替换具体的path  具体的格式参考  https://www.w3school.com.cn/media/media_mimeref.asp
+            'file_name': file_name or _file_name,
+            'file': (_file_name, buffer, 'text/plain')
+        }  # 需要替换具体的 path 具体的格式参考  https://www.w3school.com.cn/media/media_mimeref.asp
+
         multi_form = MultipartEncoder(form)
         headers = {
             'Authorization': f'Bearer {self.access_token}',
             'Content-Type': multi_form.content_type
         }
-        response = requests.post(url, headers=headers, data=multi_form)
+        response = requests.post(f"{self.url_im}/files",
+                                 headers=headers,
+                                 data=multi_form)
+
         res = response.json()
         if res.get('code') == 0:
             return res['data']['file_key']
         print(res)
+        try:
+            buffer.close()
+        except:
+            pass
         return None
 
     def send_file(self,
-                  file_path: str | Path,
+                  file: str | Path,
                   receive_id: str = None,
                   file_name: str = None):
         receive_id = receive_id or self.receive_id
-        file_key = self.upload_file(file_path, file_name)
+        file_key = self.upload_file(file, file_name)
         if file_key is not None:
             return self.messages(content=file_key,
                                  receive_id=receive_id,
