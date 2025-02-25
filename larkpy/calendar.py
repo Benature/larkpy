@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import requests
 import datetime
+import dateutil
 
 
 class LarkCalendar(LarkAPI):
@@ -43,7 +44,7 @@ class LarkCalendar(LarkAPI):
         reminders: List[Dict[Literal['minutes'], int]] = None,
         recurrence: str = None,
         attachments: List[Dict[Literal['file_token'], str]] = None,
-        timezone: str = None,
+        timezone: str = 'Asia/Shanghai',
         user_id_type: Literal['user_id', 'union_id', 'open_id'] = 'user_id',
         whole_day: bool = False,
     ) -> requests.models.Response:
@@ -80,6 +81,11 @@ class LarkCalendar(LarkAPI):
         else:
             start_date = None
             end_date = None
+            if start_time.tzinfo is None or timezone is not None:
+                start_time = start_time.replace(
+                    tzinfo=dateutil.tz.gettz(timezone))
+            if end_time.tzinfo is None or timezone is not None:
+                end_time = end_time.replace(tzinfo=dateutil.tz.gettz(timezone))
             start_timestamp = int(start_time.timestamp())
             end_timestamp = int(end_time.timestamp())
 
@@ -192,7 +198,7 @@ class LarkCalendar(LarkAPI):
                     user_ids: List[str] = None,
                     room_ids: List[str] = None,
                     chat_ids: List[str] = None,
-                    timezone: str = None,
+                    timezone: str = 'Asia/Shanghai',
                     user_id_type: str = None,
                     page_token: str = None,
                     page_size: int = None,
@@ -213,6 +219,9 @@ class LarkCalendar(LarkAPI):
                 if whole_day:
                     filter[key] = {"date": value.strftime("%Y-%m-%d")}
                 else:
+                    if value.tzinfo is None or timezone is not None:
+                        value = value.replace(
+                            tzinfo=dateutil.tz.gettz(timezone))
                     filter[key] = {"timestamp": int(value.timestamp())}
 
         if timezone is not None:
