@@ -22,6 +22,11 @@ class LarkBot:
         self.webhook_url = webhook_url
         self.headers = {"Content-Type": "application/json"}
 
+    def send_with_payload(self, payload: Dict):
+        return requests.post(self.webhook_url,
+                             data=json.dumps(payload),
+                             headers=self.headers)
+
     def send(self, content, title):
         return self.send_card(content=content, title=title)
 
@@ -178,7 +183,8 @@ class LarkBot:
                                                         "yellow", "green",
                                                         "blue", "purple",
                                                         "gray"] = None,
-                              width: Literal["auto", "fill"] = "fill",
+                              width: Literal["auto", "fill",
+                                             "auto_when_fold"] = "fill",
                               border: bool = False):
         """生成折叠面板
         
@@ -192,21 +198,21 @@ class LarkBot:
         cp = CollapsiblePanel(
             tag="collapsible_panel",  # 折叠面板的标签。
             # 操作组件的唯一标识。JSON 2.0 新增属性。用于在调用组件相关接口中指定组件。需开发者自定义。
-            element_id="custom_id",
+            # element_id="custom_id",
             # 面板内组件的排列方向。JSON 2.0 新增属性。可选值："vertical"（垂直排列）、"horizontal"（水平排列）。默认为 "vertical"。
             direction=direction,
-            # 面板内组件的垂直间距。JSON 2.0 新增属性。可选值："small"(4px)、"medium"(8px)、"large"(12px)、"extra_large"(16px)或[0,99]px。
-            vertical_spacing="8px",
-            # 面板内组件内的垂直间距。JSON 2.0 新增属性。可选值："small"(4px)、"medium"(8px)、"large"(12px)、"extra_large"(16px)或[0,99]px。
-            horizontal_spacing="8px",
-            # 面板内组件的垂直居中方式。JSON 2.0 新增属性。默认值为 top。
-            vertical_align="top",
-            # 面板内组件的水平居中方式。JSON 2.0 新增属性。默认值为 left。
-            horizontal_align="left",
-            # 折叠面板的内边距。JSON 2.0 新增属性。支持范围 [0,99]px。
-            padding="8px 8px 8px 8px",
-            # 折叠面板的外边距。JSON 2.0 新增属性。默认值 "0"，支持范围 [-99,99]px。
-            margin="0px 0px 0px 0px",
+            # # 面板内组件的垂直间距。JSON 2.0 新增属性。可选值："small"(4px)、"medium"(8px)、"large"(12px)、"extra_large"(16px)或[0,99]px。
+            # vertical_spacing="8px",
+            # # 面板内组件内的垂直间距。JSON 2.0 新增属性。可选值："small"(4px)、"medium"(8px)、"large"(12px)、"extra_large"(16px)或[0,99]px。
+            # horizontal_spacing="8px",
+            # # 面板内组件的垂直居中方式。JSON 2.0 新增属性。默认值为 top。
+            # vertical_align="top",
+            # # 面板内组件的水平居中方式。JSON 2.0 新增属性。默认值为 left。
+            # horizontal_align="left",
+            # # 折叠面板的内边距。JSON 2.0 新增属性。支持范围 [0,99]px。
+            # padding="8px 8px 8px 8px",
+            # # 折叠面板的外边距。JSON 2.0 新增属性。默认值 "0"，支持范围 [-99,99]px。
+            # margin="0px 0px 0px 0px",
             expanded=expanded,  # 面板是否展开。默认值 false。
             background_color=background_color,  # 折叠面板的背景色，默认为透明。
             header={
@@ -221,15 +227,12 @@ class LarkBot:
                 "padding": "4px 0px 4px 8px",  # 标题区的内边距。
                 "position": "top",  # 标题区的位置。
                 "width": width,  # 标题区的宽度。默认值为 fill。
-                # "icon": {
-                #     # 标题前缀图标
-                #     "tag": "standard_icon",  # 图标类型.
-                #     "token":
-                #     "chat-forbidden_outlined",  # 图标库中图标的 token。当 tag 为 standard_icon 时生效。
-                #     "color": "orange",  # 图标的颜色。当 tag 为 standard_icon 时生效。
-                #     "img_key": "img_v2_38811724",  # 自定义前缀图标的图片 key。当 tag 为 custom_icon 时生效。
-                #     "size": "16px 16px"  # 图标的尺寸。默认值为 10px 10px。
-                # },
+                "icon": {
+                    "tag": "standard_icon",
+                    "token": "down-small-ccm_outlined",
+                    "color": "",
+                    "size": "16px 16px"
+                },
                 "icon_position": "follow_text",  # 图标的位置。默认值为 right。
                 # 折叠面板展开时图标旋转的角度，正值为顺时针，负值为逆时针。默认值为 180。
                 "icon_expanded_angle": -180
