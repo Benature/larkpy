@@ -173,8 +173,8 @@ class LarkBot:
         }],
                               title="项目更新通知")
 
-    def gen_collapsible_panel(self,
-                              content: str,
+    @staticmethod
+    def gen_collapsible_panel(content: str,
                               title: str = "",
                               expanded: bool = False,
                               direction: Literal["vertical",
