@@ -9,7 +9,9 @@
 from __future__ import annotations
 import requests
 import json
-from typing import List, Dict
+import os
+from pathlib import Path
+from typing import List, Dict, Union
 from typing_extensions import Literal
 
 
@@ -25,8 +27,63 @@ class LarkBot:
     def send_with_payload(self, payload: Dict):
         return requests.post(self.webhook_url, data=json.dumps(payload), headers=self.headers)
 
-    def send(self, content, title=""):
-        return self.send_card(content=content, title=title)
+    def send(self, content: Union[str, List[Dict], Dict], title: str = "", echo: bool = False):
+        """发送消息到飞书群
+        
+        Args:
+            content: 消息内容，可以是字符串或字典列表
+            title: 消息标题
+            echo: 是否打印请求数据
+            
+        Returns:
+            requests.Response: HTTP响应对象
+        """
+        if isinstance(content, str):
+            return self.send_text(content, title=title, echo=echo)
+        else:
+            return self.send_card(content=content, title=title, echo=echo)
+
+    def send_text(self, text: str, title: str = "", echo: bool = False) -> requests.Response:
+        """发送纯文本消息
+        
+        Args:
+            text: 要发送的文本内容
+            title: 消息标题
+            echo: 是否打印请求数据
+            
+        Returns:
+            requests.Response: HTTP响应对象
+        """
+        return self.send_payload([dict(tag="text", text=text)], title=title, echo=echo)
+
+    def send_payload(self,
+                     payload_content: List[Dict],
+                     title: str = "",
+                     echo: bool = False) -> requests.Response:
+        """以 payload 形式发送消息
+        
+        Args:
+            payload_content: 消息内容
+            title: 消息标题
+            echo: 是否打印发送内容
+
+        Returns:
+            requests.Response: 响应对象
+        """
+        data = {
+            "msg_type": "post",
+            "content": {
+                "post": {
+                    "zh_cn": {
+                        "title": title,
+                        "content": [payload_content],
+                    },
+                },
+            },
+        }
+        if echo:
+            print(json.dumps(data, ensure_ascii=False, indent=2))
+        return requests.post(self.webhook_url, data=json.dumps(data), headers=self.headers)
 
     def send_post(self,
                   content: str | List[Dict],
@@ -64,11 +121,11 @@ class LarkBot:
             return requests.post(self.webhook_url, data=json.dumps(data), headers=self.headers)
 
     def send_card(self,
-                  content: str | List[Dict] | Dict,
+                  content: Union[str, List[Dict], Dict],
                   title: str = "",
                   subtitle: str = "",
-                  elements: List[Dict] = [],
-                  template="blue",
+                  buttons: List[Dict] = None,
+                  template: str = "blue",
                   echo: bool = False):
         """发送飞书卡片"""
         if isinstance(content, str):
@@ -86,7 +143,7 @@ class LarkBot:
         else:
             raise ValueError(f"Unknown content type {type(content)}")
 
-        for button in elements:
+        for button in (buttons or []):
             card_elements.append({
                 "tag":
                 "button",
@@ -152,7 +209,7 @@ class LarkBot:
         }
 
         if echo:
-            print(data)
+            print(json.dumps(data, ensure_ascii=False, indent=2))
         return requests.post(self.webhook_url, data=json.dumps(data), headers=self.headers)
 
     def test(self):
