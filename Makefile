@@ -1,5 +1,5 @@
-version=0.0.4a0
-project=pylark
+version=0.2.2
+project=larkpy
 
 prepare:
 	pip install -r requirements.txt
@@ -15,7 +15,7 @@ install:
 	pip install -U .
 
 build:
-	python setup.py sdist bdist_wheel
+	python -m build
 
 all: uninstall clean build
 	pip install -U dist/${project}-${version}-py3-none-any.whl
