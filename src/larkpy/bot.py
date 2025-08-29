@@ -23,11 +23,9 @@ class LarkBot:
         self.headers = {"Content-Type": "application/json"}
 
     def send_with_payload(self, payload: Dict):
-        return requests.post(self.webhook_url,
-                             data=json.dumps(payload),
-                             headers=self.headers)
+        return requests.post(self.webhook_url, data=json.dumps(payload), headers=self.headers)
 
-    def send(self, content, title):
+    def send(self, content, title=""):
         return self.send_card(content=content, title=title)
 
     def send_post(self,
@@ -63,9 +61,7 @@ class LarkBot:
             }
             if echo:
                 print(data)
-            return requests.post(self.webhook_url,
-                                 data=json.dumps(data),
-                                 headers=self.headers)
+            return requests.post(self.webhook_url, data=json.dumps(data), headers=self.headers)
 
     def send_card(self,
                   content: str | List[Dict] | Dict,
@@ -108,8 +104,7 @@ class LarkBot:
                     "type":
                     "open_url",
                     "default_url":
-                    button.get("default_url", None) or button.get("url", None)
-                    or "",
+                    button.get("default_url", None) or button.get("url", None) or "",
                     "pc_url":
                     button.get("pc_url", ""),
                     "ios_url":
@@ -158,9 +153,7 @@ class LarkBot:
 
         if echo:
             print(data)
-        return requests.post(self.webhook_url,
-                             data=json.dumps(data),
-                             headers=self.headers)
+        return requests.post(self.webhook_url, data=json.dumps(data), headers=self.headers)
 
     def test(self):
         return self.send_post([{
@@ -177,14 +170,10 @@ class LarkBot:
     def gen_collapsible_panel(content: str,
                               title: str = "",
                               expanded: bool = False,
-                              direction: Literal["vertical",
-                                                 "horizontal"] = "vertical",
-                              background_color: Literal["red", "orange",
-                                                        "yellow", "green",
-                                                        "blue", "purple",
-                                                        "gray"] = None,
-                              width: Literal["auto", "fill",
-                                             "auto_when_fold"] = "fill",
+                              direction: Literal["vertical", "horizontal"] = "vertical",
+                              background_color: Literal["red", "orange", "yellow", "green", "blue",
+                                                        "purple", "gray"] = None,
+                              width: Literal["auto", "fill", "auto_when_fold"] = "fill",
                               border: bool = False):
         """生成折叠面板
         
