@@ -9,7 +9,7 @@ import shutil
 # 添加 src 目录到路径
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from larkpy.bot import LarkWebhook, BotConfig
+from larkpy.webhook import LarkWebhook, BotConfig
 from test_utils import skip_if_no_config, test_config
 
 

@@ -19,7 +19,7 @@ def main():
     try:
         # 直接导入 larkpy 模块
         from larkpy.card import CardElementGenerator
-        from larkpy.bot import LarkWebhook, BotConfig
+        from larkpy.webhook import LarkWebhook, BotConfig
 
         print("✓ Modules imported successfully")
 

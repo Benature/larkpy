@@ -1,9 +1,9 @@
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
 __homepage__ = __github__
 
-from .bot import LarkWebhook, BotConfig
+from .webhook import LarkWebhook, BotConfig
 from .card import CardElementGenerator
 
 from .api import LarkAPI
