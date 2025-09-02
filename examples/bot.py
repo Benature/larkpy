@@ -1,7 +1,7 @@
-from larkpy import LarkBot
+from larkpy import LarkWebhook
 
 url_webhook = "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxx"
-feishu = LarkBot(url_webhook)
+feishu = LarkWebhook(url_webhook)
 
 # example 1
 feishu.send_text(f"test")

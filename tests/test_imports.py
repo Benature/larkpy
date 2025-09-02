@@ -18,8 +18,8 @@ def test_new_modules_import():
 
 def test_original_modules_import():
     """测试原有模块导入"""
-    from larkpy import LarkBot, LarkAPI, LarkMessage, LarkDocx, LarkBitTable, LarkCalendar
-    assert LarkBot is not None
+    from larkpy import LarkWebhook, LarkAPI, LarkMessage, LarkDocx, LarkBitTable, LarkCalendar
+    assert LarkWebhook is not None
     assert LarkAPI is not None
     assert LarkMessage is not None
     assert LarkDocx is not None
@@ -29,13 +29,11 @@ def test_original_modules_import():
 
 def test_all_imports():
     """测试所有模块一次性导入"""
-    from larkpy import (
-        LarkBot, BotConfig, CardElementGenerator,
-        LarkAPI, LarkMessage, LarkDocx, LarkBitTable, LarkCalendar
-    )
+    from larkpy import (LarkWebhook, BotConfig, CardElementGenerator, LarkAPI, LarkMessage,
+                        LarkDocx, LarkBitTable, LarkCalendar)
     modules = [
-        LarkBot, BotConfig, CardElementGenerator,
-        LarkAPI, LarkMessage, LarkDocx, LarkBitTable, LarkCalendar
+        LarkWebhook, BotConfig, CardElementGenerator, LarkAPI, LarkMessage, LarkDocx, LarkBitTable,
+        LarkCalendar
     ]
     for module in modules:
         assert module is not None

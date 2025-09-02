@@ -17,12 +17,13 @@ from typing_extensions import Literal
 
 class BotConfig:
     """机器人配置管理"""
-    
+
     def __init__(self, config_file: str = None):
-        self.config_file = Path(config_file) if config_file else Path.home() / '.larkpy' / 'bot_config.json'
+        self.config_file = Path(
+            config_file) if config_file else Path.home() / '.larkpy' / 'bot_config.json'
         self.config_file.parent.mkdir(exist_ok=True)
         self.config = self._load_config()
-    
+
     def _load_config(self) -> dict:
         if self.config_file.exists():
             try:
@@ -31,19 +32,19 @@ class BotConfig:
             except:
                 return {}
         return {}
-    
+
     def save_config(self, name: str, webhook_url: str):
         """保存配置"""
         self.config[name] = webhook_url
         with open(self.config_file, 'w', encoding='utf-8') as f:
             json.dump(self.config, f, ensure_ascii=False, indent=2)
-    
+
     def get_config(self, name: str) -> str:
         """获取配置"""
         return self.config.get(name)
 
 
-class LarkBot:
+class LarkWebhook:
     """飞书机器人
     https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN?lang=zh-CN
     """
@@ -71,7 +72,10 @@ class LarkBot:
         else:
             return self.send_card(content=content, title=title, echo=echo)
 
-    def send_text(self, text: str, title: str = "", echo: bool = False) -> requests.Response:
+    def send_text(self,
+                  content: str | Dict,
+                  title: str = "",
+                  echo: bool = False) -> requests.Response:
         """发送纯文本消息
         
         Args:
@@ -82,7 +86,12 @@ class LarkBot:
         Returns:
             requests.Response: HTTP响应对象
         """
-        return self.send_payload([dict(tag="text", text=text)], title=title, echo=echo)
+
+        if isinstance(content, dict):
+            payload = content
+        else:
+            payload = [dict(tag="text", text=content)]
+        return self.send_payload(payload, title=title, echo=echo)
 
     def send_payload(self,
                      payload_content: List[Dict],
