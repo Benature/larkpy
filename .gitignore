@@ -178,3 +178,4 @@ cython_debug/
 bot_config.json
 message_config.json
 test_config.json
+.vscode/

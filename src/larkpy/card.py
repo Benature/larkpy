@@ -21,12 +21,12 @@ def parse_column_type(df) -> dict:
     for col in df.columns:
         if is_datetime64_any_dtype(df[col]):
             col_type = 'date'
+        elif is_bool_dtype(df[col]):
+            col_type = 'boolean'
         elif is_numeric_dtype(df[col]):
             col_type = 'numeric'
         elif is_string_dtype(df[col]):
             col_type = 'text'
-        elif is_bool_dtype(df[col]):
-            col_type = 'boolean'
         elif is_categorical_dtype(df[col]):
             col_type = 'category'
         else:
