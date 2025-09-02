@@ -6,7 +6,8 @@
       "Bash(mkdir:*)",
       "Bash(move:*)",
       "Bash(mv:*)",
-      "Bash(make:*)"
+      "Bash(make:*)",
+      "Bash(pytest:*)"
     ],
     "deny": [],
     "ask": []

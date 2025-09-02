@@ -3,7 +3,8 @@ __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
 __homepage__ = __github__
 
-from .bot import LarkBot
+from .bot import LarkBot, BotConfig
+from .card import CardElementGenerator
 
 from .api import LarkAPI
 from .docx import LarkDocx

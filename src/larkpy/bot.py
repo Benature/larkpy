@@ -15,6 +15,34 @@ from typing import List, Dict, Union
 from typing_extensions import Literal
 
 
+class BotConfig:
+    """机器人配置管理"""
+    
+    def __init__(self, config_file: str = None):
+        self.config_file = Path(config_file) if config_file else Path.home() / '.larkpy' / 'bot_config.json'
+        self.config_file.parent.mkdir(exist_ok=True)
+        self.config = self._load_config()
+    
+    def _load_config(self) -> dict:
+        if self.config_file.exists():
+            try:
+                with open(self.config_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except:
+                return {}
+        return {}
+    
+    def save_config(self, name: str, webhook_url: str):
+        """保存配置"""
+        self.config[name] = webhook_url
+        with open(self.config_file, 'w', encoding='utf-8') as f:
+            json.dump(self.config, f, ensure_ascii=False, indent=2)
+    
+    def get_config(self, name: str) -> str:
+        """获取配置"""
+        return self.config.get(name)
+
+
 class LarkBot:
     """飞书机器人
     https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN?lang=zh-CN

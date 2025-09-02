@@ -1,0 +1,12 @@
+{
+  "bot": {
+    "test_webhook": "https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_WEBHOOK_TOKEN"
+  },
+  "message": {
+    "test_app": {
+      "app_id": "cli_xxxxxxxxxx",
+      "app_secret": "your_app_secret_here",
+      "receive_id": "ou_xxxxxxxxxx"
+    }
+  }
+}

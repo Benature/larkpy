@@ -171,3 +171,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# larkpy configuration files
+.larkpy/
+*_config.json
+bot_config.json
+message_config.json
+test_config.json

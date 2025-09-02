@@ -40,6 +40,27 @@ class CardElementGenerator:
     """飞书卡片元素生成工具."""
 
     @classmethod
+    def hr(cls) -> Dict:
+        """生成分割线元素."""
+        return {"tag": "hr"}
+    
+    @classmethod
+    def image(cls, image_key: str, alt: str = "", width: str = "auto", height: str = "auto") -> Dict:
+        """生成图片元素."""
+        return {
+            "tag": "image",
+            "image_key": image_key,
+            "alt": alt,
+            "width": width,
+            "height": height
+        }
+    
+    @classmethod
+    def column_divider(cls) -> Dict:
+        """生成列分割器元素."""
+        return {"tag": "column_divider"}
+
+    @classmethod
     def markdown(cls, text: str) -> Dict:
         """将文本转换为 markdown 格式的飞书卡片元素."""
         elements = {
