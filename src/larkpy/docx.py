@@ -43,7 +43,7 @@ class LarkDocx(LarkAPI):
                      index: int = -1,
                      block_id: str = None,
                      document_revision_id: int = -1) -> dict:
-        """创建文档快
+        """创建文档块
         Args:
             block_children (dict): 块内容
             index (int, optional): 块索引，默认在最后追加
@@ -74,7 +74,7 @@ class LarkDocx(LarkAPI):
                      end_index: int,
                      block_id: str = None,
                      document_revision_id: int = -1) -> dict:
-        """删除文档快
+        """批量删除文档块
         Args:
             start_index (int): 开始索引
             end_index (int): 结束索引

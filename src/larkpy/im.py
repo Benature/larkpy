@@ -1,3 +1,15 @@
+"""LarkMessage - 飞书即时通讯消息发送模块
+
+本模块提供了飞书即时通讯的消息发送功能，支持发送文本、图片、文件等多种类型的消息。
+
+主要功能：
+    - 消息发送：支持文本、图片、文件消息发送
+    - 文件上传：支持图片和文件上传
+    - 群组管理：获取群组列表
+    - 消息撤回：支持消息撤回功能
+    - 智能类型检测：自动检测内容类型并选择合适的发送方式
+"""
+
 from __future__ import annotations
 from .api import LarkAPI
 from typing_extensions import Literal
@@ -13,6 +25,28 @@ from ._typing import UserId
 
 
 class LarkMessage(LarkAPI):
+    """飞书即时通讯消息发送类
+    
+    继承自 LarkAPI，提供飞书即时通讯的消息发送功能。
+    支持发送文本、图片、文件等多种类型的消息，并提供消息撤回功能。
+    
+    Args:
+        app_id (str): 飞书应用 ID
+        app_secret (str): 飞书应用密钥
+        receive_id (str, optional): 默认接收者 ID. Defaults to None.
+        log_level (Literal, optional): 日志级别. Defaults to 'ERROR'.
+        
+    Attributes:
+        url_im (str): 即时通讯 API 基础 URL
+        logger: 日志记录器
+        receive_id (str): 接收者 ID
+        message_history (list): 消息发送历史
+        
+    Examples:
+        >>> lark_msg = LarkMessage('app_id', 'app_secret', 'user_id')
+        >>> lark_msg.send('Hello World')
+        >>> lark_msg.send_image('/path/to/image.png')
+    """
 
     def __init__(self,
                  app_id,
@@ -20,6 +54,14 @@ class LarkMessage(LarkAPI):
                  receive_id: str = None,
                  log_level: Literal['INFO', 'DEBUG', 'WARNING',
                                     'ERROR'] = 'ERROR'):
+        """初始化 LarkMessage 实例
+        
+        Args:
+            app_id (str): 飞书应用 ID
+            app_secret (str): 飞书应用密钥
+            receive_id (str, optional): 默认接收者 ID. Defaults to None.
+            log_level (Literal, optional): 日志级别. Defaults to 'ERROR'.
+        """
         super().__init__(app_id, app_secret)
         self.url_im = "https://open.feishu.cn/open-apis/im/v1"
         self.logger = create_logger(stack_depth=2, level=log_level)
@@ -30,7 +72,21 @@ class LarkMessage(LarkAPI):
              content: str | Path | Dict,
              receive_id: str = None,
              **kwargs):
-        """发送消息（通用）：文本、图片、文件"""
+        """智能发送消息（通用接口）
+        
+        根据内容类型智能选择合适的发送方式：
+        - 字符串：作为文本消息发送
+        - 文件路径：根据文件类型自动选择图片或文件发送
+        - DataFrame/Figure：支持 pandas DataFrame 和 matplotlib Figure
+        
+        Args:
+            content (str | Path | Dict): 消息内容
+            receive_id (str, optional): 接收者 ID. Defaults to None.
+            **kwargs: 其他参数
+            
+        Returns:
+            dict: 发送结果
+        """
         if isinstance(content, (str, Path)):
             test_path = Path(content)
             if test_path.exists():
