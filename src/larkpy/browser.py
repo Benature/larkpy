@@ -65,12 +65,91 @@ class LarkRequests:
             rank (int, optional): 排序方式. Defaults to 6.
             
         Returns:
-            requests.Response: HTTP 响应对象
+            requests.Response: HTTP 响应对象，包含 JSON 数据
+            
+            响应 JSON 数据结构:
+            {
+                "code": 0,           # 状态码，0 表示成功
+                "msg": "Success",    # 状态消息
+                "data": {
+                    "node_list": ["节点ID1", "节点ID2", ...],  # 节点ID列表
+                    "total": 0,      # 总数
+                    "entities": {
+                        "nodes": {   # 节点详细信息字典，key 为节点ID
+                            "节点ID": {
+                                "obj_token": str,        # 对象token
+                                "name": str,             # 文档名称
+                                "type": int,             # 对象类型 (8:多维表格, 16:知识库, 22:文档, 12:文件等)
+                                "url": str,              # 访问链接
+                                "open_time": int,        # 打开时间（Unix时间戳，秒）
+                                "create_time": int,      # 创建时间（Unix时间戳，秒）
+                                "edit_time": int,        # 编辑时间（Unix时间戳，秒）
+                                "activity_time": int,    # 活动时间（Unix时间戳，秒）
+                                "my_edit_time": int,     # 我的编辑时间（Unix时间戳，秒）
+                                "owner_id": str,         # 所有者ID
+                                "owner_type": int,       # 所有者类型
+                                "edit_uid": str,         # 编辑者ID
+                                "is_pined": bool,        # 是否置顶
+                                "is_stared": bool,       # 是否收藏
+                                "thumbnail": str,        # 缩略图URL
+                                "icon_info": str,        # 图标信息（JSON字符串）
+                                "path_count": int,       # 路径数量
+                                "delete_flag": int,      # 删除标记
+                                "delete_uid": str,       # 删除者ID
+                                "obj_biz_type": int,     # 对象业务类型 (1:个人空间, 2:共享空间)
+                                "extra": {               # 额外信息
+                                    "biz_type": int,     # 业务类型
+                                    "template_type": int, # 模板类型
+                                    "is_external": bool, # 是否外部
+                                    "display_tag": {...},# 显示标签
+                                    # 知识库文档特有字段:
+                                    "wiki_space_id": str,        # 知识库空间ID
+                                    "wiki_space_name": str,      # 知识库空间名称
+                                    "wiki_space_type": int,      # 知识库空间类型
+                                    "wiki_sub_token": str,       # 知识库子token
+                                    "wiki_subtype": int,         # 知识库子类型
+                                    "wiki_version": str,         # 知识库版本
+                                    "wiki_homepage": str,        # 知识库主页
+                                    "wiki_space_create_uid": str,# 知识库创建者ID
+                                    # 文件特有字段:
+                                    "parent_folder_obj_token": str,  # 父文件夹token
+                                    "parent_folder_obj_type": int,   # 父文件夹类型
+                                    "parent_folder_name": str,       # 父文件夹名称
+                                    "size": str,                     # 文件大小
+                                    "subtype": str,                  # 文件子类型
+                                    "version": str,                  # 版本号
+                                    "data_version": str,             # 数据版本号
+                                    "file_risk_tag": bool,           # 文件风险标记
+                                    "copiable": bool,                # 是否可复制
+                                },
+                                "thumbnail_extra": {...}, # 缩略图额外信息
+                                "can_set_sec_label": int, # 是否可设置安全标签
+                                "secret_key_delete": bool,# 密钥删除
+                                "security_name": str,     # 安全等级名称（如 "L1 - Public"）
+                                "security_level": int,    # 安全等级
+                                "security_label_id": str, # 安全标签ID
+                                "get_sec_label_code": int,# 获取安全标签代码
+                            }
+                        }
+                    }
+                }
+            }
             
         Examples:
             >>> lark_req = LarkRequests(cookie="your_cookie")
             >>> response = lark_req.space_recent(length=10)
             >>> data = response.json()
+            >>> 
+            >>> # 访问节点列表
+            >>> node_list = data['data']['node_list']
+            >>> nodes = data['data']['entities']['nodes']
+            >>> 
+            >>> # 遍历所有节点
+            >>> for node_id in node_list:
+            >>>     node_info = nodes[node_id]
+            >>>     print(f"名称: {node_info['name']}")
+            >>>     print(f"打开时间: {node_info['open_time']}")
+            >>>     print(f"URL: {node_info['url']}")
         """
         if obj_types is None:
             obj_types = [2, 22, 44, 3, 30, 8, 11, 12, 84]

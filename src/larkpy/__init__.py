@@ -31,7 +31,7 @@ Examples:
     - CardElementGenerator: 飞书卡片元素生成器
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0-dev"
 __author__ = "Benature"
 __github__ = "https://github.com/Benature/larkpy"
 __homepage__ = __github__
