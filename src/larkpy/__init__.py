@@ -27,6 +27,7 @@ Examples:
     - LarkDocx: 飞书文档的读取和操作
     - LarkBitTable: 多维表格的数据操作
     - LarkCalendar: 日历事件的管理
+    - LarkRequests: 基于 Cookie 的飞书浏览器请求
     - CardElementGenerator: 飞书卡片元素生成器
 """
 
@@ -43,3 +44,4 @@ from .docx import LarkDocx
 from .bitTable import LarkBitTable
 from .im import LarkMessage
 from .calendar import LarkCalendar
+from .browser import LarkRequests
