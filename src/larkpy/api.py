@@ -123,6 +123,15 @@ class LarkAPI():
         node = data['data']['node']
         return node  # ['obj_token']
 
+    def download_file(self, file_key: str) -> bytes:
+        """下载文件
+        https://open.feishu.cn/document/server-docs/im-v1/file/get
+        """
+        url = f"https://open.feishu.cn/open-apis/im/v1/files/{file_key}"
+        response = self.request("GET", url)
+        response.raise_for_status()
+        return response.content
+
     def _get_access_token(self, app_id, app_secret):
         """获取tenant_access_token访问凭证
         
