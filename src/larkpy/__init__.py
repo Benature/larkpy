@@ -23,10 +23,13 @@ Examples:
 主要模块:
     - LarkWebhook: 飞书机器人 webhook 消息发送
     - LarkAPI: 飞书开放平台 API 调用基础类
+    - LarkOAuth: OAuth 2.0 用户授权管理
+    - TokenManager: 用户授权令牌持久化管理
     - LarkMessage: 即时通讯消息发送和管理
     - LarkDocx: 飞书文档的读取和操作
     - LarkBitTable: 多维表格的数据操作
     - LarkCalendar: 日历事件的管理
+    - LarkTask: 飞书任务的查询和管理
     - LarkRequests: 基于 Cookie 的飞书浏览器请求
     - CardElementGenerator: 飞书卡片元素生成器
 """
@@ -40,8 +43,11 @@ from .webhook import LarkWebhook, WebhookConfig
 from .card import CardElementGenerator
 
 from .api import LarkAPI
+from .auth import LarkOAuth
+from .token_manager import TokenManager
 from .docx import LarkDocx
 from .bitTable import LarkBitTable
 from .im import LarkMessage
 from .calendar import LarkCalendar
+from .task import LarkTask
 from .browser import LarkRequests

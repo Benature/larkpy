@@ -28,7 +28,7 @@ class LarkRequests:
         >>> lark_req = LarkRequests(cookie=cookie)
         >>> recent_list = lark_req.space_recent()
     """
-    
+
     def __init__(self, cookie: str) -> None:
         """初始化 LarkRequests 实例
         
@@ -37,21 +37,21 @@ class LarkRequests:
         """
         self.cookie = cookie
         self.headers = {
-            'Cookie': self.cookie,
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'Cookie':
+            self.cookie,
+            'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
-    
-    def space_recent(
-        self,
-        last_label: Optional[str] = None,
-        length: int = 22,
-        thumbnail_width: int = 1028,
-        thumbnail_height: int = 1028,
-        thumbnail_policy: int = 4,
-        obj_types: Optional[list] = None,
-        type_opt: int = 1,
-        rank: int = 6
-    ) -> requests.Response:
+
+    def space_recent(self,
+                     last_label: Optional[str] = None,
+                     length: int = 22,
+                     thumbnail_width: int = 1028,
+                     thumbnail_height: int = 1028,
+                     thumbnail_policy: int = 4,
+                     obj_types: Optional[list] = None,
+                     type_opt: int = 1,
+                     rank: int = 6) -> requests.Response:
         """获取飞书空间最近访问列表
         
         Args:
@@ -153,9 +153,9 @@ class LarkRequests:
         """
         if obj_types is None:
             obj_types = [2, 22, 44, 3, 30, 8, 11, 12, 84]
-        
-        base_url = "https://avrnf5fwjt.feishu.cn/space/api/explorer/recent/list/"
-        
+
+        base_url = f"https://{self.domain}/space/api/explorer/recent/list/"
+
         # 构建查询参数，只添加非 None 的参数
         params = {
             "length": length,
@@ -165,17 +165,17 @@ class LarkRequests:
             "type_opt": type_opt,
             "rank": rank
         }
-        
+
         # 如果提供了 last_label，则添加到参数中
         if last_label is not None:
             params["last_label"] = last_label
-        
+
         # 添加多个 obj_type 参数
         param_parts = [f"{k}={v}" for k, v in params.items()]
         for obj_type in obj_types:
             param_parts.append(f"obj_type={obj_type}")
-        
+
         url = f"{base_url}?{'&'.join(param_parts)}"
-        
+
         response = requests.get(url, headers=self.headers)
         return response
