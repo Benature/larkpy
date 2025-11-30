@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Optional
 
 from .api import LarkAPI
+from .utils import clean_params
 
 
 class LarkTask(LarkAPI):
@@ -102,17 +103,42 @@ class LarkTask(LarkAPI):
         """
         url = 'https://open.feishu.cn/open-apis/task/v2/tasks'
 
-        params = {
+        params = clean_params({
             'page_size': page_size,
             'type': task_type,
+            'user_id_type': self.user_id_type,
+            'completed': completed,
+            'page_token': page_token
+        })
+
+        response = self.request('GET', url, params=params)
+        return response.json()
+
+    def list_tasklists(self,
+                       page_size: int = 50,
+                       page_token: str = None,
+                       user_id: str = None) -> dict:
+        """获取调用身份可见的任务清单列表
+
+        Args:
+            page_size (int, optional): 返回的清单数量，范围 1-200。默认 50
+            page_token (str, optional): 翻页标记，首次请求无需传递
+            user_id (str, optional): 指定的用户 ID（受 user_id_type 影响），
+                为空时默认使用当前调用身份
+
+        Returns:
+            dict: 接口返回数据，结构同官方文档
+
+        References:
+            https://open.feishu.cn/document/task-v2/tasklist/list
+        """
+        url = 'https://open.feishu.cn/open-apis/task/v2/tasklists'
+        params = clean_params({
+            'page_size': page_size,
+            'page_token': page_token,
+            'user_id': user_id,
             'user_id_type': self.user_id_type
-        }
-
-        if completed is not None:
-            params['completed'] = completed
-
-        if page_token:
-            params['page_token'] = page_token
+        })
 
         response = self.request('GET', url, params=params)
         return response.json()
@@ -145,16 +171,14 @@ class LarkTask(LarkAPI):
             raise ValueError("tasklist_guid is required")
 
         url = f'https://open.feishu.cn/open-apis/task/v2/tasklist/{tasklist_guid}/tasks'
-        params = {'page_size': page_size, 'user_id_type': self.user_id_type}
-
-        if completed is not None:
-            params['completed'] = completed
-        if start_create_time:
-            params['start_create_time'] = start_create_time
-        if end_create_time:
-            params['end_create_time'] = end_create_time
-        if page_token:
-            params['page_token'] = page_token
+        params = clean_params({
+            'page_size': page_size,
+            'user_id_type': self.user_id_type,
+            'completed': completed,
+            'start_create_time': start_create_time,
+            'end_create_time': end_create_time,
+            'page_token': page_token
+        })
 
         response = self.request('GET', url, params=params)
         return response.json()
