@@ -88,6 +88,7 @@ class LarkAPI():
         else:
             raise ValueError("必须提供 user_access_token 或者 (app_id 和 app_secret)")
 
+            
         self.headers = {
             'Content-Type': 'application/json; charset=utf-8',
             'Authorization': f'Bearer {self.access_token}'
@@ -170,7 +171,7 @@ class LarkAPI():
         response.raise_for_status()
         return response.content
 
-    def create_wiki_node(self,
+    def create_wiki_node(self, 
                          space_id: str,
                          obj_type: str = "docx",
                          title: str = "未命名文档",
@@ -208,6 +209,7 @@ class LarkAPI():
         """
         url = f'https://open.feishu.cn/open-apis/wiki/v2/spaces/{space_id}/nodes'
 
+        
         payload = {
             "obj_type": obj_type,
             "node_type": node_type,
@@ -222,11 +224,12 @@ class LarkAPI():
                                  data=json.dumps(payload))
         return response.json()
 
-    def get_wiki_node_children(self,
-                               space_id: str,
-                               parent_node_token: str = None,
-                               page_size: int = 50,
-                               page_token: str = None) -> dict:
+
+    def get_wiki_node_children(self, 
+                                space_id: str,
+                                parent_node_token: str = None,
+                                page_size: int = 50,
+                                page_token: str = None) -> dict:
         """获取知识库节点的子节点列表
         
         获取指定知识库空间或节点下的直接子节点列表。
@@ -260,15 +263,17 @@ class LarkAPI():
             https://open.feishu.cn/document/server-docs/docs/wiki-v2/space-node/list
         """
         url = f'https://open.feishu.cn/open-apis/wiki/v2/spaces/{space_id}/nodes'
-
-        params = {'page_size': page_size}
-
+        
+        params = {
+            'page_size': page_size
+        }
+        
         if parent_node_token:
             params['parent_node_token'] = parent_node_token
-
+        
         if page_token:
             params['page_token'] = page_token
-
+        
         response = requests.get(url, headers=self.headers, params=params)
         return response.json()
 

@@ -22,7 +22,8 @@ dependencies = [
     "bs4", 
     "lxml",
     "pandas",
-    "requests_toolbelt"
+    "requests_toolbelt",
+    "typing_extensions",
 ]
 
 [project.urls]

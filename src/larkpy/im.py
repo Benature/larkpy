@@ -307,7 +307,7 @@ class LarkMessage(LarkAPI):
             content = json.dumps(content)
         else:
             if msg_type == 'text':
-                content = f"""{{"text":"{content}"}}"""
+                content = json.dumps({"text": content}, ensure_ascii=False)
             elif msg_type == 'image':
                 content = f"""{{"image_key":"{content}"}}"""
             elif msg_type == 'file':
