@@ -159,8 +159,15 @@ class LarkAPI():
             url += f'&obj_type={obj_type}'
         response = requests.request("GET", url, headers=self.headers)
         data = response.json()
+        
+        if data.get('code') != 0:
+            raise Exception(f"获取节点信息失败: {data.get('msg')} (code: {data.get('code')})")
+            
+        if 'data' not in data or 'node' not in data['data']:
+            raise Exception(f"API返回数据格式错误: {data}")
+            
         node = data['data']['node']
-        return node  # ['obj_token']
+        return node
 
     def download_file(self, file_key: str) -> bytes:
         """下载文件

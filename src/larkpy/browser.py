@@ -29,13 +29,14 @@ class LarkRequests:
         >>> recent_list = lark_req.space_recent()
     """
 
-    def __init__(self, cookie: str) -> None:
+    def __init__(self, cookie: str, domain: str) -> None:
         """初始化 LarkRequests 实例
         
         Args:
             cookie (str): 浏览器 Cookie 字符串
         """
         self.cookie = cookie
+        self.domain = domain
         self.headers = {
             'Cookie':
             self.cookie,

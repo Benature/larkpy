@@ -51,3 +51,4 @@ from .im import LarkMessage
 from .calendar import LarkCalendar
 from .task import LarkTask
 from .browser import LarkRequests
+from .url_utils import parse_document_url
